@@ -295,6 +295,55 @@
         transform: none;
       }
     }
+
+    .scores-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 0 0 24px;
+}
+
+.score-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.score-card h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  color: var(--theme);
+}
+
+.score-main {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.score-sub {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.theme-score {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.theme-score .mini-score {
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+    
   </style>
 </head>
 <body>
@@ -320,7 +369,9 @@ Cette initiative se veut participative et la plus factuelle possible afin d’ai
     </section>
 
     <div id="meta" class="meta">Chargement des données…</div>
-
+    <section id="globalScores" class="scores-panel">
+      <div class="center">Calcul des scores…</div>
+    </section>
     <main id="content">
       <div class="center">Chargement du fichier CSV…</div>
     </main>
@@ -404,6 +455,62 @@ Cette initiative se veut participative et la plus factuelle possible afin d’ai
       };
     }
 
+    function scoreFromValue(value) {
+  const n = Number(value);
+  if (n === 2) return 1;
+  if (n === 1) return 0.5;
+  return 0;
+}
+
+function computeScores(rows) {
+  const totalPropositions = rows.length;
+
+  const global = {
+    benoitPoints: 0,
+    stephaniePoints: 0,
+    totalPropositions
+  };
+
+  const byTheme = new Map();
+
+  rows.forEach((row) => {
+    const benoitPoints = scoreFromValue(row.benoit);
+    const stephaniePoints = scoreFromValue(row.stephanie);
+
+    global.benoitPoints += benoitPoints;
+    global.stephaniePoints += stephaniePoints;
+
+    if (!byTheme.has(row.theme)) {
+      byTheme.set(row.theme, {
+        theme: row.theme,
+        count: 0,
+        benoitPoints: 0,
+        stephaniePoints: 0
+      });
+    }
+
+    const themeData = byTheme.get(row.theme);
+    themeData.count += 1;
+    themeData.benoitPoints += benoitPoints;
+    themeData.stephaniePoints += stephaniePoints;
+  });
+
+  return {
+    global,
+    byTheme
+  };
+}
+
+function formatScore(points, total) {
+  if (!total) return "0 / 0";
+  return `${points.toFixed(1)} / ${total}`;
+}
+
+function formatPercent(points, total) {
+  if (!total) return "0 %";
+  return `${Math.round((points / total) * 100)} %`;
+}
+
     function groupByTheme(rows) {
       const groups = new Map();
 
@@ -416,10 +523,23 @@ Cette initiative se veut participative et la plus factuelle possible afin d’ai
     }
 
     function render() {
+      const scoreData = computeScores(state.filteredRows);
+      const globalScores = document.getElementById("globalScores");
       const groups = groupByTheme(state.rows);
       const total = state.rows.length;
       const themes = groups.length;
-
+      globalScores.innerHTML = `
+  <div class="score-card">
+    <h3>Benoît Tirmarche</h3>
+    <div class="score-main">${formatScore(scoreData.global.benoitPoints, scoreData.global.totalPropositions)}</div>
+    <div class="score-sub">${formatPercent(scoreData.global.benoitPoints, scoreData.global.totalPropositions)} des propositions reprises</div>
+  </div>
+  <div class="score-card">
+    <h3>Stéphanie Ducret</h3>
+    <div class="score-main">${formatScore(scoreData.global.stephaniePoints, scoreData.global.totalPropositions)}</div>
+    <div class="score-sub">${formatPercent(scoreData.global.stephaniePoints, scoreData.global.totalPropositions)} des propositions reprises</div>
+  </div>
+`;
       meta.textContent = `${total} proposition${total > 1 ? "s" : ""} répartie${total > 1 ? "s" : ""} dans ${themes} thème${themes > 1 ? "s" : ""}.`;
 
       if (!groups.length) {
@@ -431,7 +551,19 @@ Cette initiative se veut participative et la plus factuelle possible afin d’ai
         <section class="theme-card">
           <div class="theme-header">
             <h2 class="theme-title">${escapeHtml(theme)}</h2>
-            <div class="theme-count">${items.length} proposition${items.length > 1 ? "s" : ""}</div>
+            <div>
+  <div class="theme-count">${items.length} proposition${items.length > 1 ? "s" : ""}</div>
+  <div class="theme-score">
+    <span class="mini-score">
+      Benoît : ${formatScore(scoreData.byTheme.get(theme).benoitPoints, scoreData.byTheme.get(theme).count)}
+      (${formatPercent(scoreData.byTheme.get(theme).benoitPoints, scoreData.byTheme.get(theme).count)})
+    </span>
+    <span class="mini-score">
+      Stéphanie : ${formatScore(scoreData.byTheme.get(theme).stephaniePoints, scoreData.byTheme.get(theme).count)}
+      (${formatPercent(scoreData.byTheme.get(theme).stephaniePoints, scoreData.byTheme.get(theme).count)})
+    </span>
+  </div>
+</div>
           </div>
           <div class="table-wrap">
             <table>
