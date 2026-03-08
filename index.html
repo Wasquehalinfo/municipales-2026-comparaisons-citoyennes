@@ -514,9 +514,7 @@ function formatPercent(points, total) {
   if (!total) return "0 %";
   const percent = (points / total) * 100;
 
-  return percent % 1 === 0
-    ? `${percent.toFixed(0)} %`
-    : `${percent.toFixed(1)} %`;
+  return `${percent.toFixed(1)} %`;
 }
 
     function groupByTheme(rows) {
