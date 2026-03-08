@@ -95,8 +95,7 @@
       transform: translateX(-50%);
       width: min(520px, 86vw);
       max-width: 520px;
-      max-height: min(320px, 55vh);
-      overflow: auto;
+      overflow: visible;
       background: #111827;
       color: #ffffff;
       border-radius: 14px;
@@ -183,13 +182,12 @@
     }
 
     .theme-card {
-      overflow: visible;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 20px;
-      overflow: hidden;
       box-shadow: var(--shadow);
       margin-bottom: 22px;
+      overflow: visible;
     }
 
     .theme-header {
@@ -200,6 +198,7 @@
       padding: 18px 20px;
       background: var(--theme-soft);
       border-bottom: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
     }
 
     .theme-title {
@@ -221,7 +220,6 @@
 
     table {
       width: 100%;
-      overflow: visible;
       border-collapse: collapse;
       min-width: 760px;
     }
@@ -250,6 +248,8 @@
 
     td.status-cell {
       width: 24%;
+      text-align: center;
+      vertical-align: middle;
     }
 
     .center {
@@ -281,6 +281,10 @@
       .theme-header {
         flex-direction: column;
         align-items: flex-start;
+      }
+
+      .tooltip {
+        width: min(320px, 88vw);
       }
     }
   </style>
@@ -344,12 +348,17 @@
     }
 
     function formatTooltipText(text) {
-  return escapeHtml(text || "").replace(/\n/g, "<br>");
-}
+      return escapeHtml(text || "").replace(/\n/g, "<br>");
+    }
 
     function badgeHtml(rawValue, details) {
       const value = Number(rawValue);
-      const status = STATUS[value] || { symbol: "?", label: `Valeur inconnue (${escapeHtml(rawValue)})`, className: "status-0" };
+      const status = STATUS[value] || {
+        symbol: "?",
+        label: `Valeur inconnue (${escapeHtml(rawValue)})`,
+        className: "status-0"
+      };
+
       const safeDetails = formatTooltipText(details || "");
       const showTooltip = (value === 1 || value === 2) && safeDetails;
 
