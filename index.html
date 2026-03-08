@@ -502,13 +502,21 @@ function computeScores(rows) {
 }
 
 function formatScore(points, total) {
-  if (!total) return "0 / 0";
-  return `${points.toFixed(1)} / ${total}`;
+
+  let score = points % 1 === 0
+    ? points.toFixed(0)
+    : points.toFixed(1);
+
+  return `${score} / ${total}`;
 }
 
 function formatPercent(points, total) {
   if (!total) return "0 %";
-  return `${Math.round((points / total) * 100)} %`;
+  const percent = (points / total) * 100;
+
+  return percent % 1 === 0
+    ? `${percent.toFixed(0)} %`
+    : `${percent.toFixed(1)} %`;
 }
 
     function groupByTheme(rows) {
@@ -530,12 +538,12 @@ function formatPercent(points, total) {
       const themes = groups.length;
       globalScores.innerHTML = `
   <div class="score-card">
-    <h3>Benoît Tirmarche</h3>
+    <h3>Benoît Tirmarche (Wasquehal Vivante)</h3>
     <div class="score-main">${formatScore(scoreData.global.benoitPoints, scoreData.global.totalPropositions)}</div>
     <div class="score-sub">${formatPercent(scoreData.global.benoitPoints, scoreData.global.totalPropositions)} des propositions reprises</div>
   </div>
   <div class="score-card">
-    <h3>Stéphanie Ducret</h3>
+    <h3>Stéphanie Ducret (Wasquehal Pour Tous)</h3>
     <div class="score-main">${formatScore(scoreData.global.stephaniePoints, scoreData.global.totalPropositions)}</div>
     <div class="score-sub">${formatPercent(scoreData.global.stephaniePoints, scoreData.global.totalPropositions)} des propositions reprises</div>
   </div>
@@ -555,11 +563,11 @@ function formatPercent(points, total) {
   <div class="theme-count">${items.length} proposition${items.length > 1 ? "s" : ""}</div>
   <div class="theme-score">
     <span class="mini-score">
-      Benoît : ${formatScore(scoreData.byTheme.get(theme).benoitPoints, scoreData.byTheme.get(theme).count)}
+      Tirmarche : ${formatScore(scoreData.byTheme.get(theme).benoitPoints, scoreData.byTheme.get(theme).count)}
       (${formatPercent(scoreData.byTheme.get(theme).benoitPoints, scoreData.byTheme.get(theme).count)})
     </span>
     <span class="mini-score">
-      Stéphanie : ${formatScore(scoreData.byTheme.get(theme).stephaniePoints, scoreData.byTheme.get(theme).count)}
+      Ducret : ${formatScore(scoreData.byTheme.get(theme).stephaniePoints, scoreData.byTheme.get(theme).count)}
       (${formatPercent(scoreData.byTheme.get(theme).stephaniePoints, scoreData.byTheme.get(theme).count)})
     </span>
   </div>
