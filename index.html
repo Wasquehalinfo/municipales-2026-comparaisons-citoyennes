@@ -344,9 +344,8 @@
     }
 
     function formatTooltipText(text) {
-      return escapeHtml(text || "").replace(/
-/g, "<br>");
-    }
+  return escapeHtml(text || "").replace(/\n/g, "<br>");
+}
 
     function badgeHtml(rawValue, details) {
       const value = Number(rawValue);
