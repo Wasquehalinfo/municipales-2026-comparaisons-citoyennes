@@ -523,7 +523,7 @@ function formatPercent(points, total) {
     }
 
     function render() {
-      const scoreData = computeScores(state.filteredRows);
+      const scoreData = computeScores(state.rows);
       const globalScores = document.getElementById("globalScores");
       const groups = groupByTheme(state.rows);
       const total = state.rows.length;
