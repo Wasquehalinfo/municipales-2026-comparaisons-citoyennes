@@ -91,34 +91,39 @@
     .tooltip {
       position: absolute;
       left: 50%;
-      bottom: calc(100% + 10px);
+      top: calc(100% + 10px);
       transform: translateX(-50%);
-      width: min(360px, 72vw);
+      width: min(520px, 86vw);
+      max-width: 520px;
+      max-height: min(320px, 55vh);
+      overflow: auto;
       background: #111827;
       color: #ffffff;
       border-radius: 14px;
       padding: 12px 14px;
       box-shadow: 0 14px 32px rgba(15, 23, 42, 0.24);
       font-size: 0.9rem;
-      line-height: 1.45;
+      line-height: 1.5;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
       transition: opacity 0.18s ease, visibility 0.18s ease;
       white-space: normal;
       text-align: left;
-      z-index: 20;
+      z-index: 50;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .tooltip::after {
       content: "";
       position: absolute;
-      top: 100%;
+      bottom: 100%;
       left: 50%;
       transform: translateX(-50%);
       border-width: 8px;
       border-style: solid;
-      border-color: #111827 transparent transparent transparent;
+      border-color: transparent transparent #111827 transparent;
     }
 
     .status-badge-wrap:hover .tooltip,
@@ -178,6 +183,7 @@
     }
 
     .theme-card {
+      overflow: visible;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 20px;
@@ -210,10 +216,12 @@
 
     .table-wrap {
       overflow-x: auto;
+      overflow-y: visible;
     }
 
     table {
       width: 100%;
+      overflow: visible;
       border-collapse: collapse;
       min-width: 760px;
     }
@@ -334,10 +342,15 @@
         .replace(/'/g, "&#039;");
     }
 
+    function formatTooltipText(text) {
+      return escapeHtml(text || "").replace(/
+/g, "<br>");
+    }
+
     function badgeHtml(rawValue, details) {
       const value = Number(rawValue);
       const status = STATUS[value] || { symbol: "?", label: `Valeur inconnue (${escapeHtml(rawValue)})`, className: "status-0" };
-      const safeDetails = escapeHtml(details || "");
+      const safeDetails = formatTooltipText(details || "");
       const showTooltip = (value === 1 || value === 2) && safeDetails;
 
       if (!showTooltip) {
