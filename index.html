@@ -3,60 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comparateur des propositions citoyennes - v2</title>
+  <title>Comparateur des propositions citoyennes</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     :root {
-      --bg: #f5f7fb;
+      --bg: #f4f7fb;
       --card: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
       --border: #dbe3ef;
       --theme: #173b74;
       --theme-soft: #eaf1ff;
-      --status-0-bg: #fef2f2;
-      --status-0-text: #b91c1c;
+      --status-0-bg: #eef2f7;
+      --status-0-text: #475569;
       --status-1-bg: #fef9c3;
       --status-1-text: #854d0e;
-      --status-2-bg: #ecfdf5;
-      --status-2-text: #15803d;
+      --status-2-bg: #dcfce7;
+      --status-2-text: #166534;
       --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow-strong: 0 18px 40px rgba(17, 24, 39, 0.22);
+      --radius: 22px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
+      background: linear-gradient(180deg, #f7f9fc 0%, #eef3fb 100%);
       color: var(--text);
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     .container {
-      width: min(1200px, calc(100% - 32px));
+      width: min(1180px, calc(100% - 32px));
       margin: 32px auto 56px;
     }
 
     header {
       background: linear-gradient(135deg, #173b74 0%, #2453a6 100%);
       color: white;
-      border-radius: 20px;
-      padding: 28px;
-      box-shadow: var(--shadow);
-      margin-bottom: 24px;
+      border-radius: 24px;
+      padding: 30px 28px;
+      box-shadow: 0 18px 40px rgba(23, 59, 116, 0.18);
+      margin-bottom: 22px;
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
-      line-height: 1.15;
+      margin: 0 0 10px;
+      font-size: clamp(1.95rem, 4vw, 2.8rem);
+      line-height: 1.12;
     }
 
     .intro {
       margin: 0;
-      opacity: 0.95;
-      max-width: 880px;
+      max-width: 920px;
+      font-size: 1rem;
+      opacity: 0.97;
     }
 
     .legend {
@@ -72,37 +77,143 @@
       align-items: center;
       justify-content: center;
       border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 0.92rem;
+      padding: 7px 13px;
+      font-size: 0.93rem;
       font-weight: 700;
       white-space: nowrap;
+    }
+
+    .status-0 {
+      background: var(--status-0-bg);
+      color: var(--status-0-text);
+    }
+
+    .status-1 {
+      background: var(--status-1-bg);
+      color: var(--status-1-text);
+    }
+
+    .status-2 {
+      background: var(--status-2-bg);
+      color: var(--status-2-text);
+    }
+
+    .note {
+      background: var(--card);
+      border: 1px solid #e7eef8;
+      border-radius: 18px;
+      padding: 16px 18px;
+      margin: 0 0 24px;
+      box-shadow: var(--shadow);
+      color: #334155;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.96rem;
+      margin: 0 2px 22px;
+    }
+
+    .theme-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      overflow: visible;
+    }
+
+    .theme-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 18px 22px;
+      background: var(--theme-soft);
+      border-bottom: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .theme-title {
+      margin: 0;
+      font-size: 1.22rem;
+      color: var(--theme);
+    }
+
+    .theme-count {
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      overflow-y: visible;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th,
+    td {
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #fbfcfe;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th.candidate,
+    td.candidate {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: #fbfdff;
+    }
+
+    td.proposition {
+      width: 52%;
+      font-weight: 500;
+      vertical-align: top;
     }
 
     .status-badge-wrap {
       position: relative;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
     }
 
     .badge.has-tooltip {
       cursor: help;
+      min-width: 42px;
     }
 
     .tooltip {
       position: absolute;
       left: 50%;
-      top: calc(100% + 10px);
+      top: calc(100% + 12px);
       transform: translateX(-50%);
-      width: min(520px, 86vw);
-      max-width: 520px;
-      overflow: visible;
+      width: min(560px, 86vw);
+      max-width: 560px;
       background: #111827;
       color: #ffffff;
       border-radius: 14px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.24);
-      font-size: 0.9rem;
-      line-height: 1.5;
+      padding: 14px 16px;
+      box-shadow: var(--shadow-strong);
+      font-size: 0.92rem;
+      line-height: 1.55;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -110,6 +221,7 @@
       white-space: normal;
       text-align: left;
       z-index: 50;
+      overflow: visible;
       overflow-wrap: anywhere;
       word-break: break-word;
     }
@@ -137,121 +249,6 @@
       margin-bottom: 6px;
     }
 
-    .status-0 {
-      background: var(--status-0-bg);
-      color: var(--status-0-text);
-    }
-
-    .status-1 {
-      background: var(--status-1-bg);
-      color: var(--status-1-text);
-    }
-
-    .status-2 {
-      background: var(--status-2-bg);
-      color: var(--status-2-text);
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin: 20px 0 24px;
-    }
-
-    .search-input {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 1rem;
-      background: var(--card);
-      box-shadow: var(--shadow);
-      outline: none;
-    }
-
-    .search-input:focus {
-      border-color: #6b9cff;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
-    }
-
-    .meta {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin: 6px 2px 0;
-    }
-
-    .theme-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      margin-bottom: 22px;
-      overflow: visible;
-    }
-
-    .theme-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-      padding: 18px 20px;
-      background: var(--theme-soft);
-      border-bottom: 1px solid var(--border);
-      border-radius: 20px 20px 0 0;
-    }
-
-    .theme-title {
-      margin: 0;
-      font-size: 1.2rem;
-      color: var(--theme);
-    }
-
-    .theme-count {
-      color: var(--muted);
-      font-size: 0.92rem;
-      font-weight: 600;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      overflow-y: visible;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 760px;
-    }
-
-    th, td {
-      padding: 14px 16px;
-      text-align: left;
-      vertical-align: top;
-      border-bottom: 1px solid var(--border);
-    }
-
-    th {
-      font-size: 0.92rem;
-      color: var(--muted);
-      background: #fbfcfe;
-    }
-
-    tbody tr:hover {
-      background: #fafcff;
-    }
-
-    td.proposition {
-      width: 52%;
-      font-weight: 500;
-    }
-
-    td.status-cell {
-      width: 24%;
-      text-align: center;
-      vertical-align: middle;
-    }
-
     .center {
       text-align: center;
       padding: 40px 20px;
@@ -269,7 +266,7 @@
 
     @media (max-width: 720px) {
       .container {
-        width: min(100% - 20px, 1200px);
+        width: min(100% - 20px, 1180px);
         margin-top: 16px;
       }
 
@@ -284,7 +281,16 @@
       }
 
       .tooltip {
-        width: min(320px, 88vw);
+        left: auto;
+        right: 0;
+        transform: none;
+        width: min(330px, 88vw);
+      }
+
+      .tooltip::after {
+        left: auto;
+        right: 18px;
+        transform: none;
       }
     }
   </style>
@@ -294,7 +300,7 @@
     <header>
       <h1>Comparateur des propositions citoyennes</h1>
       <p class="intro">
-        Cette page affiche les propositions regroupées par thème et indique si elles apparaissent dans le programme de Benoît Tirmarche et de Stéphanie Ducret.
+        Cette page présente les propositions citoyennes regroupées par thème et indique, pour Benoît Tirmarche et Stéphanie Ducret, si chaque proposition est reprise entièrement, partiellement ou pas du tout dans leur programme. En survolant un symbole <strong>✓</strong> ou <strong>≈</strong>, une bulle affiche le passage correspondant du programme du candidat concerné.
       </p>
       <div class="legend" aria-label="Légende des statuts">
         <span class="legend-item status-2">✓ · Proposition reprise entièrement</span>
@@ -303,16 +309,11 @@
       </div>
     </header>
 
-    <section class="toolbar" aria-label="Outils de recherche">
-      <input
-        id="searchInput"
-        class="search-input"
-        type="search"
-        placeholder="Rechercher un thème ou une proposition…"
-        aria-label="Rechercher un thème ou une proposition"
-      />
-      <div id="meta" class="meta">Chargement des données…</div>
+    <section class="note">
+      Les colonnes des candidats sont centrées pour faciliter la comparaison visuelle. Les bulles au survol permettent de consulter les formulations correspondantes du programme sans alourdir le tableau.
     </section>
+
+    <div id="meta" class="meta">Chargement des données…</div>
 
     <main id="content">
       <div class="center">Chargement du fichier CSV…</div>
@@ -329,12 +330,10 @@
     };
 
     const state = {
-      rows: [],
-      filteredRows: []
+      rows: []
     };
 
     const content = document.getElementById("content");
-    const searchInput = document.getElementById("searchInput");
     const meta = document.getElementById("meta");
 
     function escapeHtml(value) {
@@ -348,7 +347,10 @@
     }
 
     function formatTooltipText(text) {
-      return escapeHtml(text || "").replace(/\n/g, "<br>");
+      return escapeHtml(text || "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .replace(/\n/g, "<br>");
     }
 
     function badgeHtml(rawValue, details) {
@@ -360,7 +362,7 @@
       };
 
       const safeDetails = formatTooltipText(details || "");
-      const showTooltip = (value === 1 || value === 2) && safeDetails;
+      const showTooltip = (value === 1 || value === 2) && safeDetails.trim() !== "";
 
       if (!showTooltip) {
         return `<span class="badge ${status.className}" aria-label="${escapeHtml(status.label)}">${status.symbol}</span>`;
@@ -383,8 +385,16 @@
         proposition: (row["Proposition citoyenne"] || "").trim(),
         benoit: Number(row["Benoît Tirmarche"] ?? row["Benoit Tirmarche"] ?? 0),
         stephanie: Number(row["Stéphanie Ducret"] ?? row["Stephanie Ducret"] ?? 0),
-        benoitProgramme: (row["Propositions Benoît Tirmarche (programme)"] || row["Propositions Benoit Tirmarche (programme)"] || "").trim(),
-        stephanieProgramme: (row["Propositions Stéphanie Ducret (programme)"] || row["Propositions Stephanie Ducret (programme)"] || "").trim()
+        benoitProgramme: (
+          row["Propositions Benoît Tirmarche (programme)"] ||
+          row["Propositions Benoit Tirmarche (programme)"] ||
+          ""
+        ).trim(),
+        stephanieProgramme: (
+          row["Propositions Stéphanie Ducret (programme)"] ||
+          row["Propositions Stephanie Ducret (programme)"] ||
+          ""
+        ).trim()
       };
     }
 
@@ -400,14 +410,14 @@
     }
 
     function render() {
-      const groups = groupByTheme(state.filteredRows);
-      const total = state.filteredRows.length;
+      const groups = groupByTheme(state.rows);
+      const total = state.rows.length;
       const themes = groups.length;
 
-      meta.textContent = `${total} proposition${total > 1 ? "s" : ""} affichée${total > 1 ? "s" : ""} dans ${themes} thème${themes > 1 ? "s" : ""}.`;
+      meta.textContent = `${total} proposition${total > 1 ? "s" : ""} répartie${total > 1 ? "s" : ""} dans ${themes} thème${themes > 1 ? "s" : ""}.`;
 
       if (!groups.length) {
-        content.innerHTML = `<div class="center">Aucun résultat pour cette recherche.</div>`;
+        content.innerHTML = `<div class="center">Aucune donnée disponible.</div>`;
         return;
       }
 
@@ -422,16 +432,16 @@
               <thead>
                 <tr>
                   <th>Proposition citoyenne</th>
-                  <th>Benoît Tirmarche</th>
-                  <th>Stéphanie Ducret</th>
+                  <th class="candidate">Benoît Tirmarche</th>
+                  <th class="candidate">Stéphanie Ducret</th>
                 </tr>
               </thead>
               <tbody>
                 ${items.map((item) => `
                   <tr>
                     <td class="proposition">${escapeHtml(item.proposition)}</td>
-                    <td class="status-cell">${badgeHtml(item.benoit, item.benoitProgramme)}</td>
-                    <td class="status-cell">${badgeHtml(item.stephanie, item.stephanieProgramme)}</td>
+                    <td class="candidate">${badgeHtml(item.benoit, item.benoitProgramme)}</td>
+                    <td class="candidate">${badgeHtml(item.stephanie, item.stephanieProgramme)}</td>
                   </tr>
                 `).join("")}
               </tbody>
@@ -439,22 +449,6 @@
           </div>
         </section>
       `).join("");
-    }
-
-    function applyFilter() {
-      const query = searchInput.value.trim().toLowerCase();
-
-      if (!query) {
-        state.filteredRows = [...state.rows];
-        render();
-        return;
-      }
-
-      state.filteredRows = state.rows.filter((row) => {
-        return row.theme.toLowerCase().includes(query) || row.proposition.toLowerCase().includes(query);
-      });
-
-      render();
     }
 
     function loadCsv() {
@@ -471,7 +465,6 @@
             .map(normalizeRow)
             .filter((row) => row.proposition);
 
-          state.filteredRows = [...state.rows];
           render();
         },
         error: (error) => {
@@ -486,7 +479,6 @@
       });
     }
 
-    searchInput.addEventListener("input", applyFilter);
     loadCsv();
   </script>
 </body>
